@@ -9,46 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 class UnitTestRule extends TestCase
 {
-    public function testAlpha(): void
-    {
-        $array = ['testError' => 'a@', 'testValid' => 'aeiouAÉIÓÚ'];
-        $rules = ['testError' => 'alpha', 'testValid' => 'alpha'];
-
-        $validator = new Validator();
-        $validator->set($array, $rules);
-        $this->assertCount(1, $validator->getErros());
-    }
-
-    public function testAlphaNoSpecial(): void
-    {
-        $array = ['testError' => 'aéiou', 'testValid' => 'aEiOU'];
-        $rules = ['testError' => 'alphaNoSpecial', 'testValid' => 'alphaNoSpecial'];
-
-        $validator = new Validator();
-        $validator->set($array, $rules);
-        $this->assertCount(1, $validator->getErros());
-    }
-
-    public function testAlphaNum(): void
-    {
-        $array = ['testError' => 'a1B2Éí3@', 'testValid' => 'a1B2Éí3'];
-        $rules = ['testError' => 'alphaNum', 'testValid' => 'alphaNum'];
-
-        $validator = new Validator();
-        $validator->set($array, $rules);
-        $this->assertCount(1, $validator->getErros());
-    }
-
-    public function testAlphaNumNoSpecial(): void
-    {
-        $array = ['testError' => 'AeioÚ123', 'testValid' => 'AeioU123'];
-        $rules = ['testError' => 'alphaNumNoSpecial', 'testValid' => 'alphaNumNoSpecial'];
-
-        $validator = new Validator();
-        $validator->set($array, $rules);
-        $this->assertCount(1, $validator->getErros());
-    }
-
     public function testArray(): void
     {
         $array = ['testError' => 'a', 'testValid' => ['a' => 1, 'b' => 2]];
@@ -458,23 +418,25 @@ class UnitTestRule extends TestCase
     public function testIdentifierOrCompany(): void
     {
         $array = [
-            'cpfOuCnpnError' => '96.284.092.0001/59',
-            'cpfOuCnpnValid' => '96.284.092/0001-58',
-            'cpfOuCnpnExceptionError' => '12.123.456/0007-12',
-            'cpfOuCnpnExceptionValid' => '00.000.000/0000-00'
+            'cpfOuCnpjerror' => '96.284.092.0001/59',
+            'cpfOuCnpjValid' => '96.284.092/0001-58',
+            'cpfOuCnpjExceptionError' => '12.123.456/0007-12',
+            'cpfOuCnpjExceptionValid' => '00.000.000/0000-00',
+            'cpfOuCnpjInvalid' => '0966894790',
         ];
 
         $rules = [
-            'cpfOuCnpnError' => 'identifierOrCompany',
-            'cpfOuCnpnValid' => 'identifierOrCompany',
-            'cpfOuCnpnExceptionError' => 'identifierOrCompany:12123456000712',
-            'cpfOuCnpnExceptionValid' => 'identifierOrCompany:00000000000000;22222222222222'
+            'cpfOuCnpjerror' => 'identifierOrCompany',
+            'cpfOuCnpjValid' => 'identifierOrCompany',
+            'cpfOuCnpjExceptionError' => 'identifierOrCompany:12123456000712',
+            'cpfOuCnpjExceptionValid' => 'identifierOrCompany:00000000000000;22222222222222',
+            'cpfOuCnpjInvalid' => 'identifierOrCompany',
         ];
 
         $validator = new Validator();
         $validator->set($array, $rules);
 
-        $this->assertCount(2, $validator->getErros());
+        $this->assertCount(3, $validator->getErros());
     }
 
     public function testFileMaxUploadSize(): void
@@ -690,6 +652,28 @@ class UnitTestRule extends TestCase
 
         $validator = new Validator();
         $validator->set($array, $rules);
+        $this->assertCount(2, $validator->getErros());
+    }
+
+    public function testTimestamp(): void
+    {
+        $array = [
+            'dateHourAmericanError' => '2021-04-15 21:01',
+            'dateHourAmericanValid' => '2021-04-15 21:01:04',
+            'dateHourBrasilError' => '15/04/2021 21:01',
+            'dateHourBrasilValid' => '15/04/2021 21:01:04',
+        ];
+
+        $rules = [
+            'dateHourAmericanError' => 'timestamp',
+            'dateHourAmericanValid' => 'timestamp',
+            'dateHourBrasilError' => 'timestamp',
+            'dateHourBrasilValid' => 'timestamp',
+        ];
+
+        $validator = new Validator();
+        $validator->set($array, $rules);
+
         $this->assertCount(2, $validator->getErros());
     }
 }
